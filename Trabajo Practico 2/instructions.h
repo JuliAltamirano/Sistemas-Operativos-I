@@ -6,21 +6,25 @@ struct InstructionValues {
 
 	char *buffer[30];
 	char *last_line;
-	char *direction;
-	char *prompt;
+	char direction[500];
+	char prompt[500];
 
 } instruction_values;
 
 void initializeInstructionValues () {
 
-	instruction_values.prompt = getenv("USER");
-	instruction_values.direction = getenv("HOME");
+	for ( int i = 0; i < 500; i++ ) {
+
+		instruction_values.prompt[i] = 0;
+		instruction_values.direction[i] = 0;
+	}
 }
 
 void commandLinePrompt (){
 
-	char buffer[100];
-
+	char buffer[100] = {0};
+	
+	strcat (instruction_values.prompt, getenv("USER"));
 	strcat( instruction_values.prompt, "@" );
 
 	FILE *fp = fopen ( "/proc/sys/kernel/hostname", "r" );
@@ -31,7 +35,7 @@ void commandLinePrompt (){
 	strncpy ( bf, buffer , sizeof (bf) );
 
 	strcat( instruction_values.prompt, bf );
-	strcat( instruction_values.prompt, ":~" );
+	strcat( instruction_values.prompt, ":" );
 }
 
 void saveInput ( char *input ) {
@@ -77,8 +81,6 @@ int inputClassification (){
 		return 3;
 	else if ( 0 == strcmp( instruction_values.buffer[0], "quit\n" ) )
 		return 4;
-	else if ( 0 == strncmp( instruction_values.buffer[0], "./", 2 ) )
-		return 5;
 	else
-		return 6;
+		return 5;
 }

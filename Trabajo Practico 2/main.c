@@ -9,7 +9,8 @@
 
 int main(int argc, char **argv)
 {
-	//system ("clear");
+	system ("clear");
+	chdir ("/home/julieta");
 
 	initializeInstructionValues();
 

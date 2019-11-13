@@ -15,8 +15,6 @@ struct ExecuteValues {
 	int choise;
 	int error_type;
 
-	int fd[2];
-
 } execute_values;
 
 void initializeExecuteValues() {
@@ -43,61 +41,132 @@ void errorMenssage() {
 	fprintf(stderr, "%s: orden no encontrada\n", instruction_values.buffer[0]);
 }
 
+void correctDirectionPath ( char direction[], bool one_arg) {
+
+	int quantity = 0;
+	char tmp [300] = {0};
+
+	if (!one_arg){
+
+		for (int i =1; instruction_values.buffer[i] != NULL; i++) {
+
+			strcat(tmp, instruction_values.buffer[i]);
+			strcat(tmp, " ");
+		}
+		quantity = strcspn(direction, "\n");
+		strncat(direction, tmp, quantity);
+	}
+
+	quantity = strcspn(instruction_values.buffer[1], "\n");
+	strncat(direction, instruction_values.buffer[1], quantity);
+}
+
 void executeCd () {
 
+	char direction_aux [300] = {0};
+	char tmp[500] = {0};
+	size_t home_length = strlen(getenv("HOME"));
+
 	if ( instruction_values.buffer[2] != NULL ) {
-		execute_values.is_error = -1;
-		execute_values.error_type = 2;
+		
+		correctDirectionPath(direction_aux, false);
+
+		execute_values.is_error = chdir (direction_aux);
+
+		if ( execute_values.is_error == -1 ) {
+
+			execute_values.error_type = 2;
+			return;
+		}
+
+		strcat(tmp, instruction_values.direction);
+		strcat(tmp, "/");
+		strcat(tmp, direction_aux);
+
+		initializeInstructionValues();
+		commandLinePrompt();
+
+		strcat(instruction_values.direction, tmp);
+		strcat(instruction_values.prompt, instruction_values.direction);
 		return;
 	}
 
 	execute_values.error_type = 1;
 
 	if ( instruction_values.buffer[1] == NULL ) {
-					
-		printf("buffer1 vacio\n");
-		execute_values.is_error = chdir( getenv ("HOME") );
+
+		initializeInstructionValues();
+		commandLinePrompt();
+
+		execute_values.is_error = chdir(getenv ("HOME"));
 	}
 	else if ( 0 == strcmp(instruction_values.buffer[1], "..\n") )	{
-		//chdir ();
-		printf(" buffer1 ..\n" );
+		
+		execute_values.is_error = chdir ("..");
+
+		if ( execute_values.is_error == -1 )
+			return;
+
+		initializeInstructionValues();
+		commandLinePrompt();
+
+		getcwd (tmp, sizeof(tmp));
+
+		if (0 != strcmp(tmp, getenv("HOME"))) {
+
+			if (strlen(tmp) > home_length) {
+				
+				for ( int i = 0; i < (sizeof(tmp) - home_length); i++ )
+					tmp [i] = tmp[home_length + i];
+			}
+
+			strcat(instruction_values.direction, tmp);
+			strcat(instruction_values.prompt, instruction_values.direction);
+		}
+
 	}
 	else {
-		printf("buffer1 comandos         %s\n", instruction_values.direction);
-		strcat ( instruction_values.direction, "/");
-		strcat ( instruction_values.direction, instruction_values.buffer[1] );
 
-		printf("direction         %s\n", instruction_values.direction);
-		execute_values.is_error = execl("/bin/sh", "sh", "-c", instruction_values.direction, (char *) 0);
+		correctDirectionPath(direction_aux, true);
+
+		execute_values.is_error = chdir (direction_aux);
+
+		if ( execute_values.is_error == -1 )
+			return;
 		
-	}
+		strcat(tmp, instruction_values.direction);
+		if (0 != strcmp(direction_aux, "home"))
+			strcat(tmp, "/");
+		strcat(tmp, direction_aux);
 
-	if (execute_values.is_error == 0)
-		write ( execute_values.fd[1], "Correct", 7);
+		initializeInstructionValues();
+		commandLinePrompt();
+
+		if (0 != strcmp(tmp, getenv("HOME"))) {
+
+			strcat(instruction_values.direction, tmp);
+			strcat(instruction_values.prompt, instruction_values.direction);
+		}
+	}
 }
 
 void execute () {
 
 	initializeExecuteValues();
 
-	char bufferAux [7] = {0};
-	pipe(execute_values.fd);
-
 	execute_values.pid = fork();
 	
 	execute_values.choise = inputClassification();
-
-
+	
 	//child process
 	if (execute_values.pid == 0){
 
-		close ( execute_values.fd[0]);
+		char tmp[100];
 
 		switch ( execute_values.choise ) {
 
 			case 1:
 				printf("case 1:        \n");
-				executeCd();
 				break;
 			case 2:
 				printf("case 2:        \n" );
@@ -109,17 +178,10 @@ void execute () {
 			case 4:
 				break;
 			case 5:
-				printf("case 5:        \n");
-				//chdir( instruction_values.direction);
-				//execute_values.is_error = 
-				break;
-			case 6:
 				printf("case 6:        \n" );
 				execute_values.is_error = execl("/bin/sh", "sh", "-c", instruction_values.buffer[0], (char *) 0);
 				break;
 		}
-
-		close(execute_values.fd[1]);
 		
 		if ( execute_values.is_error == -1)
 			errorMenssage();
@@ -128,39 +190,16 @@ void execute () {
 	}
 	//father process
 	else {
-		wait(0);
-		close ( execute_values.fd[1]);
+		wait (0);
 
-		read (execute_values.fd[0], bufferAux, 7);
 		printf("PADRE\n");
-		if ( execute_values.choise == 1 && strcmp(bufferAux, "Correct")==0) {
+		if ( execute_values.choise == 1) {
 
-			if ( instruction_values.buffer[1] ==NULL ) {
-				
-				printf("buffer1 vacio (padre)\n");
-				
-				/*strcpy ( instruction_values.prompt, "");
-				strcpy ( instruction_values.direction, "");
-				strcat ( instruction_values.prompt, getenv("USER"));
-				strcat ( instruction_values.direction, getenv("HOME"));
-				//initializeInstructionValues();
-				commandLinePrompt (instruction_values.prompt);*/
-			}
-			else if ( 0 == strcmp(instruction_values.buffer[1], "..\n") )	{
-				//chdir ();
-				printf(" buffer1 .. (padre)\n" );
-			}
-			else {
-				printf("buffer1 comandos (padre)\n");
-				strcat ( instruction_values.direction, "/");
-				strcat ( instruction_values.direction, instruction_values.buffer[1] );
-				strcat ( instruction_values.prompt, "/");
-				strcat (instruction_values.prompt, instruction_values.buffer[1]);
-			}
-
+			executeCd();
 		}
 
-		close(execute_values.fd[0]);
+		if ( execute_values.is_error == -1)
+			errorMenssage();
 	}
 	//strcat(prompt, bufferAux );
 	//strcat(direction, bufferAux );
