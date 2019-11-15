@@ -53,8 +53,9 @@ void correctDirectionPath ( char direction[], bool one_arg) {
 			strcat(tmp, instruction_values.buffer[i]);
 			strcat(tmp, " ");
 		}
-		quantity = strcspn(direction, "\n");
+		quantity = strcspn(tmp, "\n");
 		strncat(direction, tmp, quantity);
+		return;
 	}
 
 	quantity = strcspn(instruction_values.buffer[1], "\n");
@@ -166,19 +167,15 @@ void execute () {
 		switch ( execute_values.choise ) {
 
 			case 1:
-				printf("case 1:        \n");
 				break;
 			case 2:
-				printf("case 2:        \n" );
 				execute_values.is_error = execl("/bin/sh", "sh", "-c", "clear", (char *) 0);
 				break;
 			case 3:
-				printf("case 3:        \n" );
 				execute_values.is_error = execvp ( instruction_values.buffer[0], instruction_values.buffer );
 			case 4:
 				break;
 			case 5:
-				printf("case 6:        \n" );
 				execute_values.is_error = execl("/bin/sh", "sh", "-c", instruction_values.buffer[0], (char *) 0);
 				break;
 		}
@@ -190,9 +187,9 @@ void execute () {
 	}
 	//father process
 	else {
+
 		wait (0);
 
-		printf("PADRE\n");
 		if ( execute_values.choise == 1) {
 
 			executeCd();
@@ -200,9 +197,5 @@ void execute () {
 
 		if ( execute_values.is_error == -1)
 			errorMenssage();
-	}
-	//strcat(prompt, bufferAux );
-	//strcat(direction, bufferAux );
-	//printf("prompt: %s\n", prompt);
-		
+	}		
 }
