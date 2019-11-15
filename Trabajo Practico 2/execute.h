@@ -11,16 +11,16 @@
 struct ExecuteValues {
 
 	pid_t pid;
-	int is_error;
 	int choise;
+	int is_error;
 	int error_type;
 
 } execute_values;
 
 void initializeExecuteValues() {
 
-	execute_values.is_error = 0;
 	execute_values.choise = 0;
+	execute_values.is_error = 0;
 	execute_values.error_type = 0;
 }
 
@@ -41,7 +41,7 @@ void errorMenssage() {
 	fprintf(stderr, "%s: orden no encontrada\n", instruction_values.buffer[0]);
 }
 
-void correctDirectionPath ( char direction[], bool one_arg) {
+void correctDirectionPath ( char directory[], bool one_arg) {
 
 	int quantity = 0;
 	char tmp [300] = {0};
@@ -54,25 +54,25 @@ void correctDirectionPath ( char direction[], bool one_arg) {
 			strcat(tmp, " ");
 		}
 		quantity = strcspn(tmp, "\n");
-		strncat(direction, tmp, quantity);
+		strncat(directory, tmp, quantity);
 		return;
 	}
 
 	quantity = strcspn(instruction_values.buffer[1], "\n");
-	strncat(direction, instruction_values.buffer[1], quantity);
+	strncat(directory, instruction_values.buffer[1], quantity);
 }
 
 void executeCd () {
 
-	char direction_aux [300] = {0};
+	char directory_aux [300] = {0};
 	char tmp[500] = {0};
 	size_t home_length = strlen(getenv("HOME"));
 
 	if ( instruction_values.buffer[2] != NULL ) {
 		
-		correctDirectionPath(direction_aux, false);
+		correctDirectionPath(directory_aux, false);
 
-		execute_values.is_error = chdir (direction_aux);
+		execute_values.is_error = chdir (directory_aux);
 
 		if ( execute_values.is_error == -1 ) {
 
@@ -80,15 +80,15 @@ void executeCd () {
 			return;
 		}
 
-		strcat(tmp, instruction_values.direction);
+		strcat(tmp, directory_values.directory);
 		strcat(tmp, "/");
-		strcat(tmp, direction_aux);
+		strcat(tmp, directory_aux);
 
-		initializeInstructionValues();
+		initializeDirectoryValues();
 		commandLinePrompt();
 
-		strcat(instruction_values.direction, tmp);
-		strcat(instruction_values.prompt, instruction_values.direction);
+		strcat(directory_values.directory, tmp);
+		strcat(directory_values.prompt, directory_values.directory);
 		return;
 	}
 
@@ -96,7 +96,7 @@ void executeCd () {
 
 	if ( instruction_values.buffer[1] == NULL ) {
 
-		initializeInstructionValues();
+		initializeDirectoryValues();
 		commandLinePrompt();
 
 		execute_values.is_error = chdir(getenv ("HOME"));
@@ -108,7 +108,7 @@ void executeCd () {
 		if ( execute_values.is_error == -1 )
 			return;
 
-		initializeInstructionValues();
+		initializeDirectoryValues();
 		commandLinePrompt();
 
 		getcwd (tmp, sizeof(tmp));
@@ -121,32 +121,32 @@ void executeCd () {
 					tmp [i] = tmp[home_length + i];
 			}
 
-			strcat(instruction_values.direction, tmp);
-			strcat(instruction_values.prompt, instruction_values.direction);
+			strcat(directory_values.directory, tmp);
+			strcat(directory_values.prompt, directory_values.directory);
 		}
 
 	}
 	else {
 
-		correctDirectionPath(direction_aux, true);
+		correctDirectionPath(directory_aux, true);
 
-		execute_values.is_error = chdir (direction_aux);
+		execute_values.is_error = chdir (directory_aux);
 
 		if ( execute_values.is_error == -1 )
 			return;
 		
-		strcat(tmp, instruction_values.direction);
-		if (0 != strcmp(direction_aux, "home"))
+		strcat(tmp, directory_values.directory);
+		if (0 != strcmp(directory_aux, "home"))
 			strcat(tmp, "/");
-		strcat(tmp, direction_aux);
+		strcat(tmp, directory_aux);
 
-		initializeInstructionValues();
+		initializeDirectoryValues();
 		commandLinePrompt();
 
 		if (0 != strcmp(tmp, getenv("HOME"))) {
 
-			strcat(instruction_values.direction, tmp);
-			strcat(instruction_values.prompt, instruction_values.direction);
+			strcat(directory_values.directory, tmp);
+			strcat(directory_values.prompt, directory_values.directory);
 		}
 	}
 }

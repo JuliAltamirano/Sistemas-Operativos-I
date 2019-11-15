@@ -5,14 +5,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include "execute.h"
+#include "file.h"
 
 int main(int argc, char **argv)
 {
 	system ("clear");
-	chdir ("/home/julieta");
-
-	initializeInstructionValues();
+	
+	initializeDirectoryValues();
 
 	if ( argc > 2 )
 		return  -1;
@@ -20,27 +19,27 @@ int main(int argc, char **argv)
 	if( argc > 1 ){
 
 		fileCommand( argv[1] );
+		return 0;
 	}
-	else{
+	
+	chdir ("/home/julieta");
 
-		commandLinePrompt();
+	commandLinePrompt();
 
-		do {
-			printf( "%s$ ", instruction_values.prompt );
+	do {
+		printf( "%s$ ", directory_values.prompt );
 
-			char *line = NULL;
-			size_t line_size = 0;
+		char *line = NULL;
+		size_t line_size = 0;
 
-			getline ( &line, &line_size, stdin );
-			instruction_values.last_line = line;
+		getline ( &line, &line_size, stdin );
+		instruction_values.last_line = line;
 
-			saveInput ( line );
+		saveInput ( line );
 
-			execute();
+		execute();
 
-		} while ( strncmp( instruction_values.last_line, "quit\n", 5 ) != 0);
-
-	}
+	} while ( strncmp( instruction_values.last_line, "quit\n", 5 ) != 0);
 
 	return 0;
 }
