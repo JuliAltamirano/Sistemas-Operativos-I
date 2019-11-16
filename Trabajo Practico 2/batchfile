@@ -1,0 +1,9 @@
+echo Ejecutando comandos desde FILE: bastchfile
+echo Abriendo directorio Documentos
+cd Documentos
+echo Mostrando contenido del directorio actual
+ls
+echo Aplicando comando "clr"
+clr
+echo Abriendo Firefox
+firefox

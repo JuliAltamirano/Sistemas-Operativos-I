@@ -1,18 +1,12 @@
-#include <string.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
 #include "execute.h"
+
+void fileCommand(char name_file[]);
 
 int main(int argc, char **argv)
 {
 	system ("clear");
-	chdir ("/home/julieta");
-
-	initializeInstructionValues();
+	
+	initializeDirectoryValues();
 
 	if ( argc > 2 )
 		return  -1;
@@ -20,27 +14,48 @@ int main(int argc, char **argv)
 	if( argc > 1 ){
 
 		fileCommand( argv[1] );
+		return 0;
 	}
-	else{
+	
+	chdir ("/home/julieta");
 
-		commandLinePrompt();
+	commandLinePrompt();
 
-		do {
-			printf( "%s$ ", instruction_values.prompt );
+	do {
+		printf( "%s$ ", directory_values.prompt );
 
-			char *line = NULL;
-			size_t line_size = 0;
+		char *line = NULL;
+		size_t line_size = 0;
 
-			getline ( &line, &line_size, stdin );
-			instruction_values.last_line = line;
+		getline ( &line, &line_size, stdin );
+		instruction_values.last_line = line;
 
-			saveInput ( line );
+		saveInput ( line );
 
-			execute();
+		execute();
 
-		} while ( strncmp( instruction_values.last_line, "quit\n", 5 ) != 0);
-
-	}
+	} while ( strncmp( instruction_values.last_line, "quit\n", 5 ) != 0);
 
 	return 0;
+}
+
+void fileCommand( char name_file[] ){
+
+	FILE* fp;
+	size_t bytes_read;
+	char *instruction = NULL;
+	size_t instruction_size = 0;
+
+	fp= fopen( name_file, "r");
+
+	chdir ("/home/julieta");
+
+	while ( (bytes_read = getline( &instruction, &instruction_size, fp )) != -1 ) {
+
+		saveInput( instruction );	
+		execute();
+		sleep(1);
+	}
+	
+	fclose(fp);	
 }
