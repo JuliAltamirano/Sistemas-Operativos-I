@@ -1,11 +1,6 @@
-#include <string.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include "execute.h"
 
-#include "file.h"
+void fileCommand(char name_file[]);
 
 int main(int argc, char **argv)
 {
@@ -42,4 +37,25 @@ int main(int argc, char **argv)
 	} while ( strncmp( instruction_values.last_line, "quit\n", 5 ) != 0);
 
 	return 0;
+}
+
+void fileCommand( char name_file[] ){
+
+	FILE* fp;
+	size_t bytes_read;
+	char *instruction = NULL;
+	size_t instruction_size = 0;
+
+	fp= fopen( name_file, "r");
+
+	chdir ("/home/julieta");
+
+	while ( (bytes_read = getline( &instruction, &instruction_size, fp )) != -1 ) {
+
+		saveInput( instruction );	
+		execute();
+		sleep(1);
+	}
+	
+	fclose(fp);	
 }

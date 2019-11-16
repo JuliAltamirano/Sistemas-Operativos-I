@@ -1,11 +1,5 @@
 #include "change_directory.h"
 
-struct InstructionValues {
-
-	char *buffer[30];
-	char *last_line;
-
-} instruction_values;
 
 void saveInput ( char *input ) {
 
