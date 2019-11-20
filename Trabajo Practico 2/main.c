@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	
-	chdir ("/home/julieta");
+	chdir (getenv("HOME"));
 
 	commandLinePrompt();
 
@@ -48,7 +48,7 @@ void fileCommand( char name_file[] ){
 
 	fp= fopen( name_file, "r");
 
-	chdir ("/home/julieta");
+	chdir (getenv("HOME"));
 
 	while ( (bytes_read = getline( &instruction, &instruction_size, fp )) != -1 ) {
 

@@ -38,7 +38,8 @@ void execute () {
 	//child process
 	if (execute_values.pid == 0){
 
-		char tmp[100];
+		char execution_path[100] = "";
+		char tmp[100] = "/usr/bin/";
 
 		switch ( execute_values.choise ) {
 
@@ -52,7 +53,14 @@ void execute () {
 			case 4:
 				break;
 			case 5:
-				execute_values.is_error = execl("/bin/sh", "sh", "-c", instruction_values.buffer[0], (char *) 0);
+				strcat( tmp, instruction_values.buffer[0]);
+
+				if ( ( strstr(instruction_values.buffer[0], "&") != NULL ) && ( strspn(instruction_values.buffer[0], "&") == (strlen(instruction_values.buffer[0] - 2)) ) )
+					strncpy( execution_path, tmp, (strlen(tmp) - 2));
+				else 
+					strncpy( execution_path, tmp, (strlen(tmp) - 1));
+				
+				execute_values.is_error = execl( execution_path, execution_path, NULL);
 				break;
 		}
 		
@@ -64,7 +72,12 @@ void execute () {
 	//father process
 	else {
 
-		wait (0);
+		if ( execute_values.choise != 5 ||
+				!( strstr(instruction_values.buffer[0], "&") != NULL ) && ( strspn(instruction_values.buffer[0], "&") == (strlen(instruction_values.buffer[0] - 2)) ) )
+			{
+				printf("espera\n");
+				wait (0);
+			}
 
 		if ( execute_values.choise == 1) {
 

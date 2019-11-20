@@ -3,7 +3,7 @@
 
 void saveInput ( char *input ) {
 
-	char *word;
+	char *word = "";
 	instruction_values.buffer[0] = strtok ( input, " " );
 
 	for ( int i=1; word != NULL; i++ ) {
