@@ -1,16 +1,13 @@
-#include <sys/types.h>
-#include <sys/wait.h>
+#include "structures.h"
 
-#include "instructions.h"
-
-void initializeExecuteValues() {
+void initializeExecuteValues () {
 
 	execute_values.choise = 0;
 	execute_values.is_error = 0;
 	execute_values.error_type = 0;
 }
 
-void errorMenssage() {
+void errorMenssage () {
 
 	if ( execute_values.error_type == 1 ) {
 

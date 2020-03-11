@@ -1,5 +1,4 @@
-#include "change_directory.h"
-
+#include "structures.h"
 
 void saveInput ( char *input ) {
 

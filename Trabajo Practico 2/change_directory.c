@@ -1,9 +1,3 @@
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <unistd.h>
-
 #include "structures.h"
 
 void initializeDirectoryValues () {
@@ -15,7 +9,7 @@ void initializeDirectoryValues () {
 	}
 }
 
-void commandLinePrompt (){
+void commandLinePrompt () {
 
 	char buffer[100] = {0};
 	
@@ -33,7 +27,7 @@ void commandLinePrompt (){
 	strcat( directory_values.prompt, ":" );
 }
 
-void correctDirectionPath ( char directory[], bool one_arg) {
+void correctDirectionPath ( char directory[], bool one_arg ) {
 
 	int quantity = 0;
 	char tmp [300] = {0};
@@ -116,7 +110,6 @@ void changeDirectory () {
 			strcat(directory_values.directory, tmp);
 			strcat(directory_values.prompt, directory_values.directory);
 		}
-
 	}
 	else {
 
