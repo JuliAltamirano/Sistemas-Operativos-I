@@ -103,6 +103,7 @@ void changeDirectory () {
 
 			if (strlen(tmp) > home_length) {
 				
+				//verificar que se escribe en las posiciones restantes
 				for ( int i = 0; i < (sizeof(tmp) - home_length); i++ )
 					tmp [i] = tmp[home_length + i];
 			}

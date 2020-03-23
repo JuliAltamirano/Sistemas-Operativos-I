@@ -72,7 +72,6 @@ void execute () {
 		if ( execute_values.choise != 5 ||
 				!( strstr(instruction_values.buffer[0], "&") != NULL ) && ( strspn(instruction_values.buffer[0], "&") == (strlen(instruction_values.buffer[0] - 2)) ) )
 			{
-				printf("espera\n");
 				wait (0);
 			}
 
