@@ -27,6 +27,13 @@ int main(int argc, char **argv)
 		char *line = NULL;
 		size_t line_size = 0;
 
+		if (execute_values.background_ex){
+
+			char tmp[500] = {0};
+			getcwd (tmp, sizeof(tmp));
+			updatePrompt(false, tmp, true);			
+		}
+
 		getline ( &line, &line_size, stdin );
 		instruction_values.last_line = line;
 
@@ -54,7 +61,7 @@ void fileCommand( char name_file[] ){
 
 		saveInput( instruction );	
 		execute();
-		sleep(1);
+		//sleep(1);
 	}
 	
 	fclose(fp);	

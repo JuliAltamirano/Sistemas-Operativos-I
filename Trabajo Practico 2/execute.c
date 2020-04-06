@@ -5,6 +5,7 @@ void initializeExecuteValues () {
 	execute_values.choise = 0;
 	execute_values.is_error = 0;
 	execute_values.error_type = 0;
+	execute_values.background_ex = false;
 }
 
 void errorMenssage () {
@@ -74,6 +75,8 @@ void execute () {
 			{
 				wait (0);
 			}
+		else
+			execute_values.background_ex = true;
 
 		if ( execute_values.choise == 1) {
 

@@ -70,11 +70,8 @@ void changeDirectory () {
 		strcat(tmp, "/");
 		strcat(tmp, directory_aux);
 
-		initializeDirectoryValues();
-		commandLinePrompt();
+		updatePrompt(false, tmp, false);
 
-		strcat(directory_values.directory, tmp);
-		strcat(directory_values.prompt, directory_values.directory);
 		return;
 	}
 
@@ -82,8 +79,7 @@ void changeDirectory () {
 
 	if ( instruction_values.buffer[1] == NULL ) {
 
-		initializeDirectoryValues();
-		commandLinePrompt();
+		updatePrompt(false, tmp, false);
 
 		execute_values.is_error = chdir(getenv ("HOME"));
 	}
@@ -94,23 +90,7 @@ void changeDirectory () {
 		if ( execute_values.is_error == -1 )
 			return;
 
-		initializeDirectoryValues();
-		commandLinePrompt();
-
-		getcwd (tmp, sizeof(tmp));
-
-		if (0 != strcmp(tmp, getenv("HOME"))) {
-
-			if (strlen(tmp) > home_length) {
-				
-				//verificar que se escribe en las posiciones restantes
-				for ( int i = 0; i < (sizeof(tmp) - home_length); i++ )
-					tmp [i] = tmp[home_length + i];
-			}
-
-			strcat(directory_values.directory, tmp);
-			strcat(directory_values.prompt, directory_values.directory);
-		}
+		updatePrompt(true, tmp, false);
 	}
 	else {
 
@@ -126,13 +106,36 @@ void changeDirectory () {
 			strcat(tmp, "/");
 		strcat(tmp, directory_aux);
 
-		initializeDirectoryValues();
-		commandLinePrompt();
-
-		if (0 != strcmp(tmp, getenv("HOME"))) {
-
-			strcat(directory_values.directory, tmp);
-			strcat(directory_values.prompt, directory_values.directory);
-		}
+		updatePrompt(false, tmp, false);
 	}
+}
+
+void updatePrompt(bool cd_backward, char tmp[500], bool background_ex){
+
+	size_t home_length = strlen(getenv("HOME"));
+	char aux[500] = {0};
+	//char tmp[500] = tmp;
+	getcwd (aux, sizeof(aux));
+
+	initializeDirectoryValues();
+	commandLinePrompt();	
+
+	if (0 != strcmp(tmp, getenv("HOME")) && 0 != strcmp(aux, getenv("HOME"))) {
+
+		if (cd_backward){
+			if (strlen(aux) > home_length) {
+						
+				//verificar que se escribe en las posiciones restantes
+				for ( int i = 0; i < (sizeof(aux) - home_length); i++ )
+					tmp [i] = aux[home_length + i];
+			}
+			else{
+				for ( int i = 0; i < sizeof(aux); i++ )
+					tmp [i] = aux[i];
+			}				
+		}
+		if (!background_ex)
+			strcat(directory_values.directory, tmp);
+		strcat(directory_values.prompt ,directory_values.directory);
+	}		
 }

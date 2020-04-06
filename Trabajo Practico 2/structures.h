@@ -27,6 +27,7 @@ struct ExecuteValues {
 	int choise;
 	int is_error;
 	int error_type;
+	bool background_ex;
 
 } execute_values;
 
@@ -35,6 +36,7 @@ void initializeDirectoryValues ();
 void commandLinePrompt ();
 void correctDirectionPath ( char directory[], bool one_arg );
 void changeDirectory ();
+void updatePrompt(bool cd_backward, char tmp[500], bool background_ex);
 
 // instructions.c functions declaration
 void saveInput ( char *input );
