@@ -47,3 +47,4 @@ void execute ();
 
 // redirection.c funtions declaration
 void output();
+void input();

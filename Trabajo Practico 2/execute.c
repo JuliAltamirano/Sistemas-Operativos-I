@@ -49,13 +49,12 @@ void execute () {
 			case 3:
 				for(int i= 1; instruction_values.buffer[i] !=NULL; i++) {
 					if( (strcmp( ">" , instruction_values.buffer[i])) == 0 ){
-						printf(" OK \n"); //aca va funcion i/o
 						condition= false;
 						output();
 						break;
 					}
 					if( (strcmp( "<" , instruction_values.buffer[i])) == 0 ){
-						printf("OK2 \n"); //aca va funcion i/o 	
+						input();
 						condition= false;
 						break;		
 					}
