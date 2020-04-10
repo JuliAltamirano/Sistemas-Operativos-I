@@ -37,6 +37,7 @@ void execute () {
 
 		char execution_path[100] = "";
 		char tmp[100] = "/usr/bin/";
+		bool condition= true; // para echo 
 
 		switch ( execute_values.choise ) {
 
@@ -46,7 +47,22 @@ void execute () {
 				execute_values.is_error = execl("/bin/sh", "sh", "-c", "clear", (char *) 0);
 				break;
 			case 3:
-				execute_values.is_error = execvp ( instruction_values.buffer[0], instruction_values.buffer );
+				for(int i= 1; instruction_values.buffer[i] !=NULL; i++) {
+					if( (strcmp( ">" , instruction_values.buffer[i])) == 0 ){
+						printf(" OK \n"); //aca va funcion i/o
+						condition= false;
+						output();
+						break;
+					}
+					if( (strcmp( "<" , instruction_values.buffer[i])) == 0 ){
+						printf("OK2 \n"); //aca va funcion i/o 	
+						condition= false;
+						break;		
+					}
+				}
+				if(condition){
+					execute_values.is_error = execvp ( instruction_values.buffer[0], instruction_values.buffer );		
+				}
 			case 4:
 				break;
 			case 5:

@@ -44,3 +44,6 @@ int inputClassification ();
 void initializeExecuteValues ();
 void errorMenssage ();
 void execute ();
+
+// redirection.c funtions declaration
+void output();
