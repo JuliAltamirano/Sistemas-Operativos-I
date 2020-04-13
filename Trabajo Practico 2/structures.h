@@ -46,5 +46,5 @@ void errorMenssage ();
 void execute ();
 
 // redirection.c funtions declaration
-void output();
+void output(int position);
 void input();
