@@ -30,6 +30,11 @@ struct ExecuteValues {
 
 } execute_values;
 
+struct RedirectionValues {
+	int error_input;
+	int error_output;
+} redirection_values;
+
 // change_directory.c functions declaration
 void initializeDirectoryValues ();
 void commandLinePrompt ();
@@ -48,3 +53,4 @@ void execute ();
 // redirection.c funtions declaration
 void output(int position);
 void input();
+void failsRedirection();
