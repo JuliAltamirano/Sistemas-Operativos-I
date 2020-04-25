@@ -4,13 +4,22 @@
 #include <fcntl.h>
 #include "structures.h"
 
-void  output(int position){
+
+void initializeRedirectionValues () {
+
+	redirection_values.error_type = 0;
+	redirection_values.is_redirection_error = false;
+}
+
+void  output(int position){		// Find a way to create files with multiple words in their filename
+
 
 	char message[3000];
 
 	if (instruction_values.buffer[position+2] != NULL) {
-		redirection_values.error_output= 1;
-		failsRedirection();
+
+		redirection_values.is_redirection_error = true;
+		redirection_values.error_type = 1;
 		return;
 	}
 
@@ -23,56 +32,33 @@ void  output(int position){
 	FILE *fp;
 	fp = fopen ( instruction_values.buffer[position+1], "ab+" );  // Flag "ab+" = O_RDWR|O_CREAT|O_APPEND
 
-	/*if( fp == NULL ) {  // I think this is innecessary
-		exit (-1); 		// correct error type and print an apropiate message
-	}*/
-
 	fputs(message, fp);
 	fclose (fp);
 }
 
-void input(){
+void input(){ // Fix error with existing files and find a way to show files with multiples words in their filename
 
 	char file_content[3000];
 
 	if (instruction_values.buffer[3] != NULL) {
-		// print error, incorrect quantity of arguments, or something like that
-		// we should make specific types of error messages, like we made in errorMenssage() function in execute.c
-		redirection_values.error_input= 1;
-		failsRedirection();
+		
+		redirection_values.is_redirection_error = true;
+		redirection_values.error_type = 1;
 		return;
 	}
-
-	/*if (instruction_values.buffer[2] ){ // check if the filename doesn't exist in the actual directory 
-										// (I don't remember how to check it, we have to complete it)
-		//print error
-		return;
-	}*/
 
 	FILE *fp;
 	fp = fopen ( instruction_values.buffer[2], "r" );
 
 	if( fp == NULL ) { 
-		redirection_values.error_input= 2;
-		failsRedirection();
-		exit (-1); 		
+
+		redirection_values.is_redirection_error = true;		
+		redirection_values.error_type = 2;
+		return;
 	}
 
 	fread(file_content, 1, 3000, fp);
 	fclose(fp);
 
 	printf("%s\n", file_content);
-}
-
-void failsRedirection(){
-	
-	if( redirection_values.error_input == 2 ){
-		printf("bash: echo: archivo solicitado inexitente en directorio actual \n");
-		return;
-	}
-	if ( (redirection_values.error_input == 1) || (redirection_values.error_output == 1) ){
-		printf("bash: echo: demasiados argumentos\n");
-		return;
-	}
-
 }

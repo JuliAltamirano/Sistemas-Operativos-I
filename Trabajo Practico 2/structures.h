@@ -31,8 +31,8 @@ struct ExecuteValues {
 } execute_values;
 
 struct RedirectionValues {
-	int error_input;
-	int error_output;
+	int error_type;
+	bool is_redirection_error;
 } redirection_values;
 
 // change_directory.c functions declaration
@@ -51,6 +51,6 @@ void errorMenssage ();
 void execute ();
 
 // redirection.c funtions declaration
+void initializeRedirectionValues ();
 void output(int position);
 void input();
-void failsRedirection();
