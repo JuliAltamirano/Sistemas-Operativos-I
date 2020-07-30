@@ -16,8 +16,8 @@ void encrypt(){
     char option;
     size_t size_buffer;
     
-    fd_1 =  open ("/dev/decrypted",O_WRONLY); 
-    fd_2 = open("/dev/encrypted", O_RDWR);             
+    fd_1 =  open ("/dev/decrypter",O_WRONLY); 
+    fd_2 = open("/dev/encrypter", O_RDWR);             
     
     if ( fd_1 == -1 ){
         perror("ERROR: No se pudo abrir el dispositivo \n");
@@ -100,8 +100,8 @@ void decrypt(){
     char option;
     size_t size_buffer;
     
-    fd_1 = open("/dev/encrypted", O_WRONLY); 
-    fd_2 =  open ("/dev/decrypted",O_RDWR); 
+    fd_1 = open("/dev/encrypter", O_WRONLY); 
+    fd_2 =  open ("/dev/decrypter",O_RDWR); 
                 
     if ( fd_1 == -1 ){
         perror("ERROR: No se pudo abrir el dispositivo \n");
