@@ -33,7 +33,7 @@ static struct file_operations fops =
    .release = dev_release,
 };
 
-static int __init decrypter_init(){
+static int __init decrypter_init(void){
 
    printk(KERN_INFO "Inicializando decrypter \n");
 
@@ -68,7 +68,7 @@ static int __init decrypter_init(){
 }
 
 
-static void __exit decrypter_exit(){
+static void __exit decrypter_exit(void){
     
    device_destroy(d_class, MKDEV(major, 0));               // elimina el dispositivo
    class_unregister(d_class);                                    // anula el registro de la clase de dispositivo
@@ -87,10 +87,10 @@ static int dev_open(struct inode *inodep, struct file *filep){
 static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *offset){
    int error_count = 0;
    
-   error_count = copy_to_user(buffer, message, strlen(message));
+   error_count = raw_copy_to_user(buffer, message, strlen(message));
 
    if (error_count == 0 ){            
-      printk(KERN_INFO "decrypter ha enviado %d caracteres al usuario\n",strlen(message) );
+      printk(KERN_INFO "decrypter ha enviado %ld caracteres al usuario\n",strlen(message) );
       return 0;  
    }
    else {
