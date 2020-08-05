@@ -1,35 +1,53 @@
 #include "encrypt_decrypt.h"
 
+void errorMessage();
+
 int main(){
 
     bool opt_fail;
-    char option;
-
-    printf( "Ingrese la opcion que desea realizar: \n"
-            "a) Encriptar cadena. \n"
-            "b) Desencriptar cadena. \n");
+    int result;
+    char *option;
+    size_t size_buffer;
     
-    do{
+    errors.is_error = false;    // Initialize 'is_error' varible
+   
+    do {
         opt_fail = false;
         printf( "Ingrese la opcion que desea realizar: \n"
                 "a) Encriptar cadena. \n"
                 "b) Desencriptar cadena. \n");
-        option = getchar();
+
+        result = scanf("%s[^\n]", option); 
+        size_buffer = strlen(option);
         
-        if(option != 'a' && option != 'b'){
-            printf("OPCION INCORRECTA\n"); //ver mensaje
+        if(result == EOF){
+            printf("ERROR\n");              // TODO: change message
+            return EOF;
+        }
+
+        if( (strcmp(option, "a") != 0) && (strcmp(option, "b") != 0)){
+            
+            printf("OPCION INCORRECTA\n");  // TODO: change message
             opt_fail = true;
         }
         
-    }while (opt_fail);
+    } while (opt_fail);
 
-    if ( option == 'a' ){
+    if ( strcmp(option, "a") == 0 ){
         encrypt();
     }
-    else if( option == 'b' ){
+    else if( strcmp(option, "b") == 0 ){
         decrypt();
     }
 
+    if (errors.is_error){
+        errorMessage();
+        return -1;
+    }
     return 0;
+}
 
+void errorMessage() {
+    // TODO
+    return;
 }

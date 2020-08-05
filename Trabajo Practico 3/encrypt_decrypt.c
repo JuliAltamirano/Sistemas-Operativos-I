@@ -15,6 +15,7 @@ void encrypt(){
     bool opt_fail;
     char option;
     size_t size_buffer;
+    int result;
     
     fd_1 =  open ("/dev/decrypter",O_WRONLY); 
     fd_2 = open("/dev/encrypter", O_RDWR);             
@@ -31,18 +32,24 @@ void encrypt(){
     }
 
     printf("Escriba la cadena a encriptar: \n");
-    //scanf("%[^\n]%*c", buffer); 
-    scanf("%s", buffer); 
+    result = scanf("%s[^\n]", buffer);
+    printf ("resulr: %d", result);
     size_buffer = strlen(buffer);
+    printf ("size buffer: %ld", size_buffer);
+ 
+    if(result == EOF){
+            printf("ERROR\n");              // TODO: change message
+            return;
+        }
 
-    int w_result = write(fd_1, buffer, size_buffer);
-    if( w_result == -1){
+    result = write(fd_1, buffer, size_buffer);
+    if( result == -1){
         perror("ERROR: No se pudo escribir en el archivo \n");
         return;
     }
-    if( w_result == 0){
+    if( result == 0){
         printf("Cadena vacia");
-        //return
+        //return;
     }
 
 
@@ -56,12 +63,12 @@ void encrypt(){
         //printf("%s\n",encrypted_str);  check
     }
 
-    w_result = write(fd_2, encrypted_str, strlen(encrypted_str));
-    if( w_result == -1){
+    result = write(fd_2, encrypted_str, strlen(encrypted_str));
+    if( result == -1){
         perror("ERROR: No se pudo escribir en el archivo \n");
         return;
     }
-    if( w_result == 0){
+    if( result == 0){
         printf("Cadena vacia");
         //return
     }
@@ -82,7 +89,13 @@ void encrypt(){
 
     if(option == 's'){
         char *read_str;
-        read(fd_2, read_str, size_buffer);
+        result = read(fd_2, read_str, size_buffer);
+
+        if( result == -1){
+            perror("ERROR: No se pudo leer el archivo \n");
+            return;
+        }
+
         printf("%s", read_str);
     }
 
