@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
-#include  <stdbool.h>
+#include <stdbool.h>
 
 struct Errors {
 
@@ -11,12 +11,6 @@ struct Errors {
     int error_number;
 
 } errors;
-
-struct commonVariables {
- 
-    char *option[5];
-
-} common_variables;
 
 void encrypt();
 void decrypt();

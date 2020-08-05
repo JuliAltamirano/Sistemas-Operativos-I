@@ -6,8 +6,8 @@ int main(){
 
     bool opt_fail;
     int result;
-    char *option;
-    size_t size_buffer;
+    char option[10];
+    size_t size_option;
     
     errors.is_error = false;    // Initialize 'is_error' varible
    
@@ -17,15 +17,15 @@ int main(){
                 "a) Encriptar cadena. \n"
                 "b) Desencriptar cadena. \n");
 
-        result = scanf("%s[^\n]", option); 
-        size_buffer = strlen(option);
-        
+        result = scanf("%[^\n]%*c", option);
+        size_option = strlen(option);
+
         if(result == EOF){
             printf("ERROR\n");              // TODO: change message
             return EOF;
         }
 
-        if( (strcmp(option, "a") != 0) && (strcmp(option, "b") != 0)){
+        if( size_option != 1 || ( option[0] != 'a' && option[0] != 'b' )){
             
             printf("OPCION INCORRECTA\n");  // TODO: change message
             opt_fail = true;
@@ -33,10 +33,10 @@ int main(){
         
     } while (opt_fail);
 
-    if ( strcmp(option, "a") == 0 ){
+    if ( option[0] == 'a' ){
         encrypt();
     }
-    else if( strcmp(option, "b") == 0 ){
+    else if( option[0] == 'b' ){
         decrypt();
     }
 

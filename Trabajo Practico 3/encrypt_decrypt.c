@@ -1,22 +1,17 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <string.h>
-#include  <stdbool.h>
+#include "encrypt_decrypt.h"
 
 #define NRO_ENCRYPT  3    
 
 void encrypt(){
 
     int fd_1, fd_2;
-    char *buffer; 
-    int tmp= 0;
+    char buffer[5000]; 
+    size_t size_buffer;
+    int tmp = 0;
     bool opt_fail;
     char option;
-    size_t size_buffer;
     int result;
-    
+
     fd_1 =  open ("/dev/decrypter",O_WRONLY); 
     fd_2 = open("/dev/encrypter", O_RDWR);             
     
@@ -32,11 +27,10 @@ void encrypt(){
     }
 
     printf("Escriba la cadena a encriptar: \n");
-    result = scanf("%s[^\n]", buffer);
-    printf ("resulr: %d", result);
+
+    result = scanf("%[^\n]%*c", buffer);
     size_buffer = strlen(buffer);
-    printf ("size buffer: %ld", size_buffer);
- 
+
     if(result == EOF){
             printf("ERROR\n");              // TODO: change message
             return;
