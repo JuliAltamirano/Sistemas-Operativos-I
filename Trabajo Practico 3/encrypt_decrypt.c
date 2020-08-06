@@ -4,21 +4,21 @@
 
 void encrypt(){
 
-    FILE *fp_1, *fp_2;
+    int fd_1, fd_2;
     char buffer[5000], option[10];
     size_t size_buffer, size_option;
     bool opt_fail;
     int result, tmp = 0;
 
-    fp_1 = fopen("/dev/decrypter", "w"); 
-    fp_2 = fopen("/dev/encrypter", "r+");             
+    fd_1 = open("/dev/decrypt", O_RDWR); //O_WRONLY
+    fd_2 = open("/dev/encrypt", O_RDWR);             
     
-    if ( fp_1 == NULL ){
+    if ( fd_1 == -1 ){
         printf("ERROR: No se pudo abrir el dispositivo \n");
         perror(errno + "" );
         return;
     }
-    else if( fp_2 == NULL ){
+    else if( fd_2 == -1 ){
         printf("ERROR: No se pudo abrir el dispositivo \n");
         perror(errno + "" );
         return;
@@ -29,16 +29,18 @@ void encrypt(){
     result = scanf("%[^\n]%*c", buffer);
     size_buffer = strlen(buffer);
 
+    //printf("%s", buffer);
+
     if( result == EOF ){
         printf("ERROR\n");              // TODO: change message
         return;
     }
 
-    result = fwrite(buffer, 1, size_buffer, fp_1);
-    /*if( result == -1){
+    result = write(fd_1, buffer, size_buffer);
+    if( result == -1){
         perror("ERROR: No se pudo escribir en el archivo \n");
         return;
-    }*/
+    }
 
     char encrypted_str[size_buffer];  // encrypted string 
 
@@ -50,11 +52,11 @@ void encrypt(){
         //printf("%s\n",encrypted_str);  check
     }
 
-    result = fwrite(encrypted_str, 1, strlen(encrypted_str), fp_2);
-    /*if( result == -1){
+    result = write(fd_2, encrypted_str, strlen(encrypted_str));
+    if( result == -1){
         perror("ERROR: No se pudo escribir en el archivo \n");
         return;
-    }*/
+    }
 
     printf ("La cadena ha sido encriptada exitosamente\n");
 
@@ -79,37 +81,36 @@ void encrypt(){
 
     if( option[0] == 's' ){
         char *read_str;
-        result = fread(read_str, 1, size_buffer, fp_2);
+        result = read(fd_2, read_str, size_buffer);
 
-        /*if( result == -1){                // ferror o 0?
+        if( result == -1){                // ferror o 0?
             perror("ERROR: No se pudo leer el archivo \n");
             return;
-        }*/
-
+        }        
         printf("%s\n", read_str);
     }
 
-    fclose(fp_1);
-    fclose(fp_2);    
+    close(fd_1);
+    close(fd_2);    
 }
 
 void decrypt(){
 
-    FILE *fp_1, *fp_2;
+    int fd_1, fd_2;
     char buffer[5000], option[10];
     size_t size_buffer, size_option;
     bool opt_fail;
     int result, tmp = 0;
     
-    fp_1 = fopen("/dev/encrypter", "w"); 
-    fp_2 = fopen("/dev/decrypter", "r+"); 
+    fd_1 = open("/dev/encrypt", O_RDWR);    //O_WR
+    fd_2 = open("/dev/decrypt", O_RDWR); 
                 
-    if ( fp_1 == NULL ){
+    if ( fd_1 == -1 ){
         printf("ERROR: No se pudo abrir el dispositivo \n");
         perror(errno + "" );
         return;
     }
-    else if( fp_2 == NULL ){
+    else if( fd_2 == -1 ){
         printf("ERROR: No se pudo abrir el dispositivo \n");
         perror(errno + "" );
         return;
@@ -125,11 +126,11 @@ void decrypt(){
         return;
     }
 
-    result = fwrite(buffer, 1, size_buffer, fp_1);
-    /*if( result == -1){
+    result = write(fd_1, buffer, size_buffer);
+    if( result == -1){
         perror("ERROR: No se pudo escribir en el archivo \n");
         return;
-    }*/
+    }
 
     char decrypted_str[size_buffer];  // decrypted string 
 
@@ -141,11 +142,11 @@ void decrypt(){
         //printf("%s\n",decrypted_str);  check
     }
 
-    result = fwrite(decrypted_str, 1, strlen(decrypted_str), fp_2);
-    /*if( result == -1){
+    result = write(fd_2, decrypted_str, strlen(decrypted_str));
+    if( result == -1){
         perror("ERROR: No se pudo escribir en el archivo \n");
         return;
-    }*/
+    }
 
     printf ("La cadena ha sido desencriptada exitosamente\n");
 
@@ -170,16 +171,15 @@ void decrypt(){
 
     if( option[0] == 's' ){
         char *read_str;
-        result = fread(read_str, 1, size_buffer, fp_2);
+        result = read(fd_2, read_str, size_buffer);
 
-        /*if( result == -1){                // ferror o 0?
+        if( result == -1){                // ferror o 0?
             perror("ERROR: No se pudo leer el archivo \n");
             return;
-        }*/
-
+        }
         printf("%s", read_str);
     }
 
-    fclose(fp_1);
-    fclose(fp_2);
+    close(fd_1);
+    close(fd_2);
 }

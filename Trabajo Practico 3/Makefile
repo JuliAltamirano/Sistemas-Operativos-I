@@ -1,5 +1,5 @@
-obj-m += encrypter.o
-obj-m += decrypter.o
+obj-m += encrypt.o
+obj-m += decrypt.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build/ M=$(PWD) modules

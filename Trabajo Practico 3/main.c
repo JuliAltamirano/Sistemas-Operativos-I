@@ -13,9 +13,9 @@ int main(){
    
     do {
         opt_fail = false;
-        printf( "Ingrese la opcion que desea realizar: \n"
-                "a) Encriptar cadena. \n"
-                "b) Desencriptar cadena. \n");
+        printf( "Ingrese la opcion que desea realizar:\n"
+                "a) Encriptar cadena.\n"
+                "b) Desencriptar cadena.\n");
 
         result = scanf("%[^\n]%*c", option);
         size_option = strlen(option);

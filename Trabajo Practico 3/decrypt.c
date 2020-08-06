@@ -1,4 +1,3 @@
-
 #include <linux/init.h>            
 #include <linux/module.h>          
 #include <linux/device.h>          
@@ -6,17 +5,17 @@
 #include <linux/fs.h>             
 #include <asm/uaccess.h>   
 
-#define  DEVICE_NAME "encrypter"    
-#define  CLASS_NAME  "encrypter"        
+#define  DEVICE_NAME "decrypt"    
+#define  CLASS_NAME  "decrypt"        
 
 MODULE_LICENSE("GPL");            
-MODULE_AUTHOR("Aichino - Altamirano ");    
+MODULE_AUTHOR("Aichino - Altamirano");    
 
 static int    major;                    // El número de dispositivo mayor
-static char   *message;                 // Memoria para la cadena que se pasa desde el espacio de usuario
+static char   message[5000] = {0};                 // Memoria para la cadena que se pasa desde el espacio de usuario
 
-static struct class*  e_class  = NULL; // Puntero de estructura de clase de controlador de dispositivo
-static struct device* e_device = NULL; // Puntero de estructura del dispositivo del controlador del dispositivo
+static struct class*  d_class  = NULL; // Puntero de estructura de clase de controlador de dispositivo
+static struct device* d_device = NULL; // Puntero de estructura del dispositivo del controlador del dispositivo
 
 
 static int     dev_open(struct inode *, struct file *);
@@ -34,34 +33,34 @@ static struct file_operations fops =
    .release = dev_release,
 };
 
-static int __init encrypter_init(void){
+static int __init decrypt_init(void){
 
-   printk(KERN_INFO "Inicializando encrypter \n");
+   printk(KERN_INFO "Inicializando decrypt\n");
 
    major = register_chrdev(0, DEVICE_NAME, &fops);
 
    if ( major < 0 ){
-      printk(KERN_ALERT "encrypter: major no se pudo registrar\n");
+      printk(KERN_ALERT "decrypt: major no se pudo registrar\n");
       return major;
    }
-   printk(KERN_INFO "encrypter registrado correctamente");
+   printk(KERN_INFO "decrypt registrado correctamente");
 
-   e_class = class_create(THIS_MODULE, CLASS_NAME);
+   d_class = class_create(THIS_MODULE, CLASS_NAME);
  
-   if ( IS_ERR(e_class) ){          
+   if ( IS_ERR(d_class) ){          
       unregister_chrdev(major, DEVICE_NAME);
       printk(KERN_ALERT "Error al registrar la clase de dispositivo\n");
-      return PTR_ERR(e_class);          
+      return PTR_ERR(d_class);          
    }
    printk(KERN_INFO "Clase de dispositivo creada correctamente \n");
 
-   e_device = device_create(e_class, NULL, MKDEV(major, 0), NULL, DEVICE_NAME);
+   d_device = device_create(d_class, NULL, MKDEV(major, 0), NULL, DEVICE_NAME);
 
-   if ( IS_ERR(e_device) ){               
-      class_destroy(e_class);           
+   if ( IS_ERR(d_device) ){               
+      class_destroy(d_class);           
       unregister_chrdev(major, DEVICE_NAME);
       printk(KERN_ALERT "No se pudo crear el dispositivo\n");
-      return PTR_ERR(e_device);
+      return PTR_ERR(d_device);
    }
 
    printk(KERN_INFO "Dispositivo creado correctamente\n"); 
@@ -69,13 +68,13 @@ static int __init encrypter_init(void){
 }
 
 
-static void __exit encrypter_exit(void){
+static void __exit decrypt_exit(void){
     
-   device_destroy(e_class, MKDEV(major, 0));               // elimina el dispositivo
-   class_unregister(e_class);                                    // anula el registro de la clase de dispositivo
-   class_destroy(e_class);                                       // elimina la clase de dispositivo
+   device_destroy(d_class, MKDEV(major, 0));               // elimina el dispositivo
+   class_unregister(d_class);                                    // anula el registro de la clase de dispositivo
+   class_destroy(d_class);                                       // elimina la clase de dispositivo
    unregister_chrdev(major, DEVICE_NAME);                         // anula el registro del numero principal
-   printk(KERN_INFO "El modulo encrypter se esta por cerrar\n");
+   printk(KERN_INFO "El modulo decrypt se esta por cerrar\n");
 }
 
 
@@ -86,16 +85,16 @@ static int dev_open(struct inode *inodep, struct file *filep){
 
 
 static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *offset){
-   int error_count = 0;
-   
-   error_count = raw_copy_to_user(buffer, message, strlen(message));
+   short x = strlen(message);
+
+   int error_count = raw_copy_to_user(buffer, message, x);
 
    if (error_count == 0 ){            
-      printk(KERN_INFO "encrypter ha enviado %ld caracteres al usuario\n",strlen(message) );
+      printk(KERN_INFO "decrypt ha enviado %d caracteres al usuario\n", x);
       return 0;  
    }
    else {
-      printk(KERN_ALERT  "encrypter: Error al enviar %d caracteres al usuario\n", error_count);
+      printk(KERN_ALERT  "decrypt: Error al enviar %d caracteres al usuario\n", error_count);
       return -EFAULT;             
    }
 }
@@ -103,8 +102,8 @@ static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *of
 
 static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, loff_t *offset){
   
-  // sprintf(message, "%s(%zu letras)", buffer, len);                  
-   printk(KERN_INFO "encrypter ha recibido %zu caracteres del usuario\n", len);
+   sprintf(message, "%s", buffer);                  
+   printk(KERN_INFO "decrypt ha recibido %zu caracteres del usuario\n", len);
    return len;
 }
 
@@ -114,5 +113,5 @@ static int dev_release(struct inode *inodep, struct file *filep){
    return 0;
 }
 
-module_init(encrypter_init);
-module_exit(encrypter_exit);
+module_init(decrypt_init);
+module_exit(decrypt_exit);
