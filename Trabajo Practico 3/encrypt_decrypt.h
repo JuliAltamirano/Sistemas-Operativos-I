@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 struct Errors {
 
