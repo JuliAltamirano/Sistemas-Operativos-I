@@ -33,14 +33,14 @@ int main(){
         
     } while (opt_fail);
 
-    if ( option[0] == 'a' ){
+    if( option[0] == 'a' ){
         encrypt();
     }
     else if( option[0] == 'b' ){
         decrypt();
     }
 
-    if (errors.is_error){
+    if( errors.is_error ){
         errorMessage();
         return -1;
     }
