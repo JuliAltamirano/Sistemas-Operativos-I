@@ -101,7 +101,7 @@ void execute () {
 	else {
 
 		if ( execute_values.choise != 5 ||
-				!( strstr(instruction_values.buffer[0], "&") != NULL ) && ( strspn(instruction_values.buffer[0], "&") == (strlen(instruction_values.buffer[0] - 2)) ) )
+				(!( strstr(instruction_values.buffer[0], "&") != NULL ) && ( strspn(instruction_values.buffer[0], "&") == (strlen(instruction_values.buffer[0] - 2)) ) ))
 			{
 				wait (0);
 			}
