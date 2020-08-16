@@ -5,8 +5,9 @@
 #include <linux/fs.h>             
 #include <asm/uaccess.h>   
 
-#define  DEVICE_NAME "decrypt"    
-#define  CLASS_NAME  "decrypt"        
+#define DEVICE_NAME "decrypt"
+#define CLASS_NAME  "decrypt"
+#define ERROR -1
 
 MODULE_LICENSE("GPL");            
 MODULE_AUTHOR("Aichino - Altamirano");    
@@ -100,7 +101,7 @@ static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *of
    }
    else {
       printk(KERN_ERR "ERROR: no se pudo copiar los caracteres al usuario. DRIVER: %s\n", DEVICE_NAME);
-      return -EFAULT;             
+      return ERROR;             
    }
 }
 

@@ -1,5 +1,7 @@
 #include "encrypt_decrypt.h"
 
+#define ERROR -1
+
 void errorMessage();
 
 int main(){
@@ -47,7 +49,7 @@ int main(){
 
     if( errors.is_error ){
         errorMessage();
-        return -1;
+        return ERROR;
     }
     return 0;
 }
