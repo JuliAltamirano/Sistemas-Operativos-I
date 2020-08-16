@@ -5,21 +5,21 @@
 #include <linux/fs.h>             
 #include <asm/uaccess.h>   
 
-#define  DEVICE_NAME "decrypt"    
-#define  CLASS_NAME  "decrypt"        
+#define DEVICE_NAME "decrypt"
+#define CLASS_NAME  "decrypt"
+#define ERROR -1
 
 MODULE_LICENSE("GPL");            
 MODULE_AUTHOR("Aichino - Altamirano");    
 
-static int    major;                    // El número de dispositivo mayor
-static char   message[5000] = {0};                 // Memoria para la cadena que se pasa desde el espacio de usuario
+static int major;
+static char message[5000] = {0};
 
-static struct class*  d_class  = NULL; // Puntero de estructura de clase de controlador de dispositivo
-static struct device* d_device = NULL; // Puntero de estructura del dispositivo del controlador del dispositivo
+static struct class*  d_class  = NULL;
+static struct device* d_device = NULL;
 
-
-static int     dev_open(struct inode *, struct file *);
-static int     dev_release(struct inode *, struct file *);
+static int dev_open(struct inode *, struct file *);
+static int dev_release(struct inode *, struct file *);
 static ssize_t dev_read(struct file *, char *, size_t, loff_t *);
 static ssize_t dev_write(struct file *, const char *, size_t, loff_t *);
 
@@ -30,86 +30,92 @@ static struct file_operations fops =
    .open = dev_open,
    .read = dev_read,
    .write = dev_write,
-   .release = dev_release,
+   .release = dev_release
 };
 
 static int __init decrypt_init(void){
 
-   printk(KERN_INFO "Inicializando decrypt\n");
+   printk(KERN_INFO "Inicializando driver '%s'\n", DEVICE_NAME);
 
    major = register_chrdev(0, DEVICE_NAME, &fops);
 
    if ( major < 0 ){
-      printk(KERN_ALERT "decrypt: major no se pudo registrar\n");
+      printk(KERN_ERR "ERROR: no se pudo registrar el driver. DRIVER: %s\n", DEVICE_NAME);
       return major;
    }
-   printk(KERN_INFO "decrypt registrado correctamente");
+   printk(KERN_INFO "El driver '%s' ha sido registrado correctamente\n", DEVICE_NAME);
 
    d_class = class_create(THIS_MODULE, CLASS_NAME);
  
-   if ( IS_ERR(d_class) ){          
+   if ( IS_ERR(d_class) ){
+      printk(KERN_ERR "ERROR: no se pudo crear la clase del dispositivo. DRIVER: %s\n", DEVICE_NAME);
+      printk(KERN_INFO "Liberando numeros de dispositivo del driver '%s'\n", DEVICE_NAME);
       unregister_chrdev(major, DEVICE_NAME);
-      printk(KERN_ALERT "Error al registrar la clase de dispositivo\n");
-      return PTR_ERR(d_class);          
+      return PTR_ERR(d_class);
    }
-   printk(KERN_INFO "Clase de dispositivo creada correctamente \n");
+   printk(KERN_INFO "La clase del dispositivo para el driver '%s' ha sido creada correctamente\n", DEVICE_NAME);
 
    d_device = device_create(d_class, NULL, MKDEV(major, 0), NULL, DEVICE_NAME);
 
-   if ( IS_ERR(d_device) ){               
-      class_destroy(d_class);           
+   if ( IS_ERR(d_device) ){
+      printk(KERN_ERR "ERROR: No se pudo crear el dispositivo. DRIVER: %s\n", DEVICE_NAME);
+      printk(KERN_INFO "Eliminando la clase del dispositivo del driver '%s'\n", DEVICE_NAME);
+      class_destroy(d_class);
+      printk(KERN_INFO "Liberando numeros de dispositivo del driver '%s'\n", DEVICE_NAME);
       unregister_chrdev(major, DEVICE_NAME);
-      printk(KERN_ALERT "No se pudo crear el dispositivo\n");
       return PTR_ERR(d_device);
    }
 
-   printk(KERN_INFO "Dispositivo creado correctamente\n"); 
+   printk(KERN_INFO "El dispositivo del driver '%s' ha sido creado correctamente\n", DEVICE_NAME); 
    return 0;
 }
-
 
 static void __exit decrypt_exit(void){
     
-   device_destroy(d_class, MKDEV(major, 0));               // elimina el dispositivo
-   class_unregister(d_class);                                    // anula el registro de la clase de dispositivo
-   class_destroy(d_class);                                       // elimina la clase de dispositivo
-   unregister_chrdev(major, DEVICE_NAME);                         // anula el registro del numero principal
-   printk(KERN_INFO "El modulo decrypt se esta por cerrar\n");
+   printk(KERN_INFO "Finalizando driver '%s'\n", DEVICE_NAME);
+   printk(KERN_INFO "Eliminando el dispositivo del driver '%s'\n", DEVICE_NAME);
+   device_destroy(d_class, MKDEV(major, 0));
+   printk(KERN_INFO "Liberando el registro y eliminando la clase del dispositivo del driver '%s'\n", DEVICE_NAME);
+   class_unregister(d_class);
+   class_destroy(d_class);
+   printk(KERN_INFO "Liberando numeros de dispositivo del driver '%s'\n", DEVICE_NAME);
+   unregister_chrdev(major, DEVICE_NAME);
 }
 
-
 static int dev_open(struct inode *inodep, struct file *filep){
-   printk(KERN_INFO "Se ha abierto el dispositivo  \n");
+   
+   printk(KERN_INFO "Abriendo el archivo del dispositivo. DRIVER: %s\n", DEVICE_NAME);
    return 0;
 }
 
-
 static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *offset){
-   short x = strlen(message);
+   
+   int bytes_not_copied;
 
-   int error_count = raw_copy_to_user(buffer, message, x);
+   printk(KERN_INFO "Leyendo el archivo del dispositivo. DRIVER: %s\n", DEVICE_NAME);
+   bytes_not_copied = raw_copy_to_user(buffer, message, strlen(message));
 
-   if (error_count == 0 ){            
-      printk(KERN_INFO "decrypt ha enviado %d caracteres al usuario\n", x);
+   if (bytes_not_copied == 0 ){            
+      printk(KERN_INFO "El driver '%s' ha copiado %ld caracteres al usuario\n", DEVICE_NAME, strlen(message));
       return 0;  
    }
    else {
-      printk(KERN_ALERT  "decrypt: Error al enviar %d caracteres al usuario\n", error_count);
-      return -EFAULT;             
+      printk(KERN_ERR "ERROR: no se pudo copiar los caracteres al usuario. DRIVER: %s\n", DEVICE_NAME);
+      return ERROR;             
    }
 }
 
-
 static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, loff_t *offset){
   
-   sprintf(message, "%s", buffer);                  
-   printk(KERN_INFO "decrypt ha recibido %zu caracteres del usuario\n", len);
+   printk(KERN_INFO "Escribiendo el archivo del dispositivo. DRIVER: %s\n", DEVICE_NAME);
+   sprintf(message, "%s", buffer);
+   printk(KERN_INFO "El driver '%s' ha recibido del usuario %ld caracteres y procede a escribirlos en el archivo del dispositivo\n", DEVICE_NAME, len);
    return len;
 }
 
-
 static int dev_release(struct inode *inodep, struct file *filep){
-   printk(KERN_INFO "El dispositivo se ha cerrado\n");
+   
+   printk(KERN_INFO "Cerrando el archivo del dispositivo. DRIVER: %s\n", DEVICE_NAME);
    return 0;
 }
 
