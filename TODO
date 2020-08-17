@@ -1,2 +1,5 @@
-TODO: Makefile TP2
-TODO: fix background execution TP2
+TP2:
+	TODO: fix background execution
+	TODO: add "~" to prompt
+	TODO: find a way to create and show files with multiple words in their filename
+	TODO: fix error open existing files

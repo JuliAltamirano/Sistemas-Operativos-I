@@ -27,7 +27,7 @@ void commandLinePrompt () {
 	strcat( directory_values.prompt, ":" );
 }
 
-void correctDirectionPath ( char directory[], bool one_arg ) {
+void fixDirectionPath ( char directory[], bool one_arg ) {
 
 	int quantity = 0;
 	char tmp [300] = {0};
@@ -56,7 +56,7 @@ void changeDirectory () {
 
 	if ( instruction_values.buffer[2] != NULL ) {
 		
-		correctDirectionPath(directory_aux, false);
+		fixDirectionPath(directory_aux, false);
 
 		execute_values.is_error = chdir (directory_aux);
 
@@ -114,7 +114,7 @@ void changeDirectory () {
 	}
 	else {
 
-		correctDirectionPath(directory_aux, true);
+		fixDirectionPath(directory_aux, true);
 
 		execute_values.is_error = chdir (directory_aux);
 

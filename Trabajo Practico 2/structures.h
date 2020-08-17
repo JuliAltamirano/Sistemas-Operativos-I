@@ -38,7 +38,7 @@ struct RedirectionValues {
 // change_directory.c functions declaration
 void initializeDirectoryValues ();
 void commandLinePrompt ();
-void correctDirectionPath ( char directory[], bool one_arg );
+void fixDirectionPath ( char directory[], bool one_arg );
 void changeDirectory ();
 
 // instructions.c functions declaration
