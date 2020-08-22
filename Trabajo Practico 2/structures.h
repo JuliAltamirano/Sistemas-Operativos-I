@@ -20,7 +20,6 @@ struct DirectoryValues {
 struct InstructionValues {
 
 	char *buffer[30];
-	char *last_line;
 
 } instruction_values;
 
@@ -30,6 +29,7 @@ struct ExecuteValues {
 	int choise;
 	int is_error;
 	int error_type;
+	bool quit;
 
 } execute_values;
 

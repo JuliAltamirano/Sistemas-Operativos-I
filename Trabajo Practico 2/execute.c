@@ -5,6 +5,7 @@ void initializeExecuteValues () {
 	execute_values.choise = 0;
 	execute_values.is_error = 0;
 	execute_values.error_type = 0;
+	execute_values.quit = false;
 }
 
 void errorMenssage () {
@@ -100,15 +101,24 @@ void execute () {
 	//father process
 	else {
 
-		if ( execute_values.choise != 5 ||
-				(!( strstr(instruction_values.buffer[0], "&") != NULL ) && ( strspn(instruction_values.buffer[0], "&") == (strlen(instruction_values.buffer[0] - 2)) ) ))
-			{
+		switch ( execute_values.choise )
+		{
+			case 1:
+				changeDirectory();
+			case 2:
+			case 3:
 				wait (0);
-			}
-
-		if ( execute_values.choise == 1) {
-
-			changeDirectory();
+				break;
+			case 4:
+				execute_values.quit = true;
+				wait (0);
+				break;
+			case 5:
+				if ( strstr(instruction_values.buffer[0], "&") != NULL && ( strcspn(instruction_values.buffer[0], "&") == (strlen(instruction_values.buffer[0]) - 2) ) )
+					break;
+				
+				wait (0);
+				break;
 		}
 
 		if ( execute_values.is_error == -1)
