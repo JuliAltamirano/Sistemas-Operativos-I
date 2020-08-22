@@ -53,6 +53,8 @@ void changeDirectory () {
 	char directory_aux [300] = {0};
 	char tmp[500] = {0};
 	size_t home_length = strlen(getenv("HOME"));
+	char home[home_length];
+	strcat(home, getenv("HOME"));
 
 	if ( instruction_values.buffer[2] != NULL ) {
 		
@@ -74,6 +76,9 @@ void changeDirectory () {
 		commandLinePrompt();
 
 		strcat(directory_values.directory, tmp);
+
+		if ( 0 == strncmp(directory_values.directory, home, home_length) )
+			strcat(directory_values.prompt, "~");
 		strcat(directory_values.prompt, directory_values.directory);
 		return;
 	}
@@ -84,8 +89,9 @@ void changeDirectory () {
 
 		initializeDirectoryValues();
 		commandLinePrompt();
+		strcat(directory_values.prompt, "~");
 
-		execute_values.is_error = chdir(getenv ("HOME"));
+		execute_values.is_error = chdir(home);
 	}
 	else if ( 0 == strcmp(instruction_values.buffer[1], "..\n") )	{
 		
@@ -99,18 +105,21 @@ void changeDirectory () {
 
 		getcwd (tmp, sizeof(tmp));
 
-		if (0 != strcmp(tmp, getenv("HOME"))) {
+		if (0 != strcmp(tmp, home)) {
 
-			if (strlen(tmp) > home_length) {
+			if ( 0 == strncmp(tmp, home, home_length) ) {
 				
 				//verificar que se escribe en las posiciones restantes
 				for ( int i = 0; i < (sizeof(tmp) - home_length); i++ )
 					tmp [i] = tmp[home_length + i];
+				strcat(directory_values.prompt, "~");
 			}
 
-			strcat(directory_values.directory, tmp);
+			strcat(directory_values.directory, tmp);				
 			strcat(directory_values.prompt, directory_values.directory);
 		}
+		else 
+			strcat(directory_values.prompt, "~");
 	}
 	else {
 
@@ -129,10 +138,16 @@ void changeDirectory () {
 		initializeDirectoryValues();
 		commandLinePrompt();
 
-		if (0 != strcmp(tmp, getenv("HOME"))) {
+		if (0 != strcmp(tmp, home)) {
 
 			strcat(directory_values.directory, tmp);
+
+			getcwd (tmp, sizeof(tmp));
+			if ( 0 == strncmp(tmp,home,home_length) )
+				strcat(directory_values.prompt, "~");
 			strcat(directory_values.prompt, directory_values.directory);
 		}
+		else
+			strcat(directory_values.prompt, "~");
 	}
 }
