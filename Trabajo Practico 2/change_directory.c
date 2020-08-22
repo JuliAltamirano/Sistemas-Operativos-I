@@ -13,7 +13,7 @@ void commandLinePrompt () {
 
 	char buffer[100] = {0};
 	
-	strcat (directory_values.prompt, getenv("USER"));
+	strcat (directory_values.prompt, USER);
 	strcat (directory_values.prompt, "@" );
 
 	FILE *fp = fopen ( "/proc/sys/kernel/hostname", "r" );
@@ -52,9 +52,7 @@ void changeDirectory () {
 
 	char directory_aux [300] = {0};
 	char tmp[500] = {0};
-	size_t home_length = strlen(getenv("HOME"));
-	char home[home_length];
-	strcat(home, getenv("HOME"));
+	size_t home_length = strlen(HOME);
 
 	if ( instruction_values.buffer[2] != NULL ) {
 		
@@ -77,7 +75,7 @@ void changeDirectory () {
 
 		strcat(directory_values.directory, tmp);
 
-		if ( 0 == strncmp(directory_values.directory, home, home_length) )
+		if ( 0 == strncmp(directory_values.directory, HOME, home_length) )
 			strcat(directory_values.prompt, "~");
 		strcat(directory_values.prompt, directory_values.directory);
 		return;
@@ -91,7 +89,7 @@ void changeDirectory () {
 		commandLinePrompt();
 		strcat(directory_values.prompt, "~");
 
-		execute_values.is_error = chdir(home);
+		execute_values.is_error = chdir(HOME);
 	}
 	else if ( 0 == strcmp(instruction_values.buffer[1], "..\n") )	{
 		
@@ -105,9 +103,9 @@ void changeDirectory () {
 
 		getcwd (tmp, sizeof(tmp));
 
-		if (0 != strcmp(tmp, home)) {
+		if (0 != strcmp(tmp, HOME)) {
 
-			if ( 0 == strncmp(tmp, home, home_length) ) {
+			if ( 0 == strncmp(tmp, HOME, home_length) ) {
 				
 				//verificar que se escribe en las posiciones restantes
 				for ( int i = 0; i < (sizeof(tmp) - home_length); i++ )
@@ -138,12 +136,12 @@ void changeDirectory () {
 		initializeDirectoryValues();
 		commandLinePrompt();
 
-		if (0 != strcmp(tmp, home)) {
+		if (0 != strcmp(tmp, HOME)) {
 
 			strcat(directory_values.directory, tmp);
 
 			getcwd (tmp, sizeof(tmp));
-			if ( 0 == strncmp(tmp,home,home_length) )
+			if ( 0 == strncmp(tmp,HOME,home_length) )
 				strcat(directory_values.prompt, "~");
 			strcat(directory_values.prompt, directory_values.directory);
 		}

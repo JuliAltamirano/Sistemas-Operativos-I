@@ -6,6 +6,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#define HOME ((const char *)getenv("HOME"))
+#define USER ((const char *)getenv("USER"))
+
 // Variables' definition
 struct DirectoryValues {
 

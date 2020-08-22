@@ -17,9 +17,10 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	
-	chdir (getenv("HOME"));
+	chdir (HOME);
 
 	commandLinePrompt();
+	strcat(directory_values.prompt, "~");
 
 	do {
 		printf( "%s$ ", directory_values.prompt );
@@ -48,7 +49,7 @@ void fileCommand( char name_file[] ){
 
 	fp= fopen( name_file, "r");
 
-	chdir (getenv("HOME"));
+	chdir (HOME);
 
 	while ( (bytes_read = getline( &instruction, &instruction_size, fp )) != -1 ) {
 
