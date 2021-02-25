@@ -40,6 +40,29 @@ void errorMenssage () {
 	fprintf(stderr, "%s: orden no encontrada\n", instruction_values.buffer[0]);
 }
 
+void runPipe(char left[], char rigth[]) {
+	char execution_path[100] = "/usr/bin/";
+	int fd[2];
+	pipe(fd);
+
+	int pid = fork();
+	//child process
+	if (pid == 0) {
+		strcat(execution_path, left);
+		close(fd[0]);
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[1]);
+		execl(execution_path, execution_path, NULL);
+	}
+	else {
+		strcat(execution_path, rigth);
+		close(fd[1]);
+		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
+		execl(execution_path, execution_path, NULL);
+	}
+}
+
 void execute () {
 
 	initializeExecuteValues();
@@ -84,27 +107,26 @@ void execute () {
 			case 5:
 				strcat( tmp, instruction_values.buffer[0]);
 				bool flag_pipe = false;
-				bool prueba = false;
-				for(int i=0; i<sizeof(instruction_values.buffer); i++){
 
-					if(strstr(instruction_values.buffer[i], "|") != NULL) {
+				for(int i = 0; instruction_values.buffer[i] != NULL; i++) {
+					if(strstr(instruction_values.buffer[i], "|") != NULL)
 						flag_pipe = true;
-					}
 				}
-	
-				if (flag_pipe){
+
+				if (flag_pipe) {
 					char tmp_pipe [300] = {0};
-					int quantity = 0;
 					char arg_left [100] = {0};
 					char arg_right [100] = {0};
 
-					for (int i =0; instruction_values.buffer[i] != NULL; i++) {
+					for (int i = 0; instruction_values.buffer[i] != NULL; i++) {
 						strcat(tmp_pipe, instruction_values.buffer[i]);
 						strcat(tmp_pipe, " ");
 					}
-					//quantity = strcspn(tmp_pipe, "\n");
-					//printf(dividePipe(tmp_pipe));	
-
+					
+					strcat(arg_left, strtok ( tmp_pipe, "|" ));
+					strcat(arg_right, strtok ( NULL, "|" ));
+					runPipe(arg_left, arg_right);
+					break;
 				}
 				else if ( ( strstr(instruction_values.buffer[0], "&") != NULL ) && ( strspn(instruction_values.buffer[0], "&") == (strlen(instruction_values.buffer[0] - 2)) ) )
 					strncpy( execution_path, tmp, (strlen(tmp) - 2));
@@ -139,23 +161,11 @@ void execute () {
 				if ( strstr(instruction_values.buffer[0], "&") != NULL && ( strcspn(instruction_values.buffer[0], "&") == (strlen(instruction_values.buffer[0]) - 2) ) )
 					break;
 				
-				wait (0);
+				wait (0);	//TODO: check
 				break;
 		}
 
 		if ( execute_values.is_error == -1)
 			errorMenssage();
 	}		
-}
-
-void dividePipe ( char *pipe ) {
-
-	char *word = "";
-	execute_values.args_pipe[0] = strtok ( pipe, "|" );
-	
-	for ( int i=1; word != NULL; i++ ) {
-
-		word = strtok ( NULL, "|" );
-		execute_values.args_pipe[i] = word;
-	}
 }

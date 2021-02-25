@@ -29,7 +29,6 @@ struct ExecuteValues {
 	int choise;
 	int is_error;
 	int error_type;
-	char* args_pipe[5];
 	bool quit;
 
 } execute_values;
@@ -52,6 +51,7 @@ int inputClassification ();
 // execute.c functions declaration
 void initializeExecuteValues ();
 void errorMenssage ();
+void runPipe(char left[], char rigth[]);
 void execute ();
 
 // redirection.c funtions declaration
