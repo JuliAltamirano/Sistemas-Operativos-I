@@ -29,6 +29,7 @@ struct ExecuteValues {
 	int choise;
 	int is_error;
 	int error_type;
+	char* args_pipe[5];
 	bool quit;
 
 } execute_values;

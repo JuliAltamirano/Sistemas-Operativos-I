@@ -83,8 +83,30 @@ void execute () {
 				break;
 			case 5:
 				strcat( tmp, instruction_values.buffer[0]);
+				bool flag_pipe = false;
+				bool prueba = false;
+				for(int i=0; i<sizeof(instruction_values.buffer); i++){
 
-				if ( ( strstr(instruction_values.buffer[0], "&") != NULL ) && ( strspn(instruction_values.buffer[0], "&") == (strlen(instruction_values.buffer[0] - 2)) ) )
+					if(strstr(instruction_values.buffer[i], "|") != NULL) {
+						flag_pipe = true;
+					}
+				}
+	
+				if (flag_pipe){
+					char tmp_pipe [300] = {0};
+					int quantity = 0;
+					char arg_left [100] = {0};
+					char arg_right [100] = {0};
+
+					for (int i =0; instruction_values.buffer[i] != NULL; i++) {
+						strcat(tmp_pipe, instruction_values.buffer[i]);
+						strcat(tmp_pipe, " ");
+					}
+					//quantity = strcspn(tmp_pipe, "\n");
+					//printf(dividePipe(tmp_pipe));	
+
+				}
+				else if ( ( strstr(instruction_values.buffer[0], "&") != NULL ) && ( strspn(instruction_values.buffer[0], "&") == (strlen(instruction_values.buffer[0] - 2)) ) )
 					strncpy( execution_path, tmp, (strlen(tmp) - 2));
 				else 
 					strncpy( execution_path, tmp, (strlen(tmp) - 1));
@@ -124,4 +146,16 @@ void execute () {
 		if ( execute_values.is_error == -1)
 			errorMenssage();
 	}		
+}
+
+void dividePipe ( char *pipe ) {
+
+	char *word = "";
+	execute_values.args_pipe[0] = strtok ( pipe, "|" );
+	
+	for ( int i=1; word != NULL; i++ ) {
+
+		word = strtok ( NULL, "|" );
+		execute_values.args_pipe[i] = word;
+	}
 }
