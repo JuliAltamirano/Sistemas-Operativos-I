@@ -53,6 +53,7 @@ void runPipe(char left[], char rigth[]) {
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[1]);
 		execl(execution_path, execution_path, NULL);
+		exit (1);
 	}
 	else {
 		strcat(execution_path, rigth);
@@ -60,6 +61,7 @@ void runPipe(char left[], char rigth[]) {
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
 		execl(execution_path, execution_path, NULL);
+		exit (1);
 	}
 }
 
